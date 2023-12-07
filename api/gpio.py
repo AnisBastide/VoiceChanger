@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 
 # Configuration des broches GPIO
-pin_potentiometer = 17  # Remplacez ceci par le numéro de broche de votre potentiomètre
+pin_potentiometer = 4  # Remplacez ceci par le numéro de broche de votre potentiomètre
 
 # Configuration de la bibliothèque RPi.GPIO
 GPIO.setmode(GPIO.BCM)
@@ -24,7 +24,7 @@ def log_value(value):
 try:
     while True:
         pot_value = read_potentiometer_value()
-        log_value(pot_value)
+        print(pot_value)
         time.sleep(1)  # Vous pouvez ajuster la fréquence de lecture ici
 
 except KeyboardInterrupt:
