@@ -1,7 +1,7 @@
 import numpy as np
 import sounddevice as sd
 
-def add_reverb(signal, decay=0.5, delay=0.5, sample_rate=44100):
+def add_reverb(signal, decay=0.5, delay=3, sample_rate=44100):
     # Créer une enveloppe de réverbération exponentielle
     envelope = decay ** np.arange(int(delay * sample_rate))
 
