@@ -8,9 +8,9 @@ pin_potentiometer = 17  # Remplacez ceci par le numéro de broche de votre poten
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(pin_potentiometer, GPIO.IN)
 
-# Fonction pour lire la valeur du potentiomètre (0-255)
+# Fonction pour lire la valeur du potentiomètre (0-1023 pour un potentiomètre 10 bits)
 def read_potentiometer_value():
-    return round((GPIO.input(pin_potentiometer) * 255) / 1)  # Conversion de 0/1 à 0/255
+    return GPIO.input(pin_potentiometer)  # Pour un potentiomètre 10 bits
 
 # Boucle principale
 try:
