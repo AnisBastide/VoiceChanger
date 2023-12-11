@@ -7,14 +7,14 @@ import time
 # Create the I2C bus
 i2c = busio.I2C(board.SCL, board.SDA)
 
-# Create the ADC object using the I2C bus
-ads = ADS.ADS1115(i2c)
-
-# Create a single-ended input on channel 0
-chan = AnalogIn(ads, ADS.P0)
-
-# Main loop
 try:
+    # Create the ADC object using the I2C bus
+    ads = ADS.ADS1115(i2c)
+
+    # Create a single-ended input on channel 0
+    chan = AnalogIn(ads, ADS.P0)
+
+    # Main loop
     while True:
         # Read the raw ADC value
         raw_value = chan.value
@@ -25,9 +25,13 @@ try:
         # Wait for a short period before reading again
         time.sleep(0.5)
 
+except ValueError as e:
+    print(f"Error: {e}")
+
 except KeyboardInterrupt:
     # Handle keyboard interrupt (Ctrl+C)
     pass
+
 finally:
     # Clean up resources
-    ads.deinit()
+    i2c.deinit()  # Close the I2C communication
