@@ -1,26 +1,33 @@
-import RPi.GPIO as GPIO
+import board
+import busio
+import adafruit_ads1x15.ads1115 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
 import time
 
-# Configuration des broches GPIO
-pin_potentiometer = 17  # Remplacez ceci par le numéro de broche de votre potentiomètre
+# Create the I2C bus
+i2c = busio.I2C(board.SCL, board.SDA)
 
-# Configuration de la bibliothèque RPi.GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(pin_potentiometer, GPIO.IN)
+# Create the ADC object using the I2C bus
+ads = ADS.ADS1115(i2c)
 
-# Fonction pour lire la valeur du potentiomètre (0-1023 pour un potentiomètre 10 bits)
-def read_potentiometer_value():
-    return GPIO.input(pin_potentiometer)  # Pour un potentiomètre 10 bits
+# Create a single-ended input on channel 0
+chan = AnalogIn(ads, ADS.P0)
 
-# Boucle principale
+# Main loop
 try:
     while True:
-        pot_value = read_potentiometer_value()
-        print(f"Valeur du potentiomètre : {pot_value}")
-        time.sleep(1)  # Vous pouvez ajuster la fréquence de lecture ici
+        # Read the raw ADC value
+        raw_value = chan.value
+
+        # Print the raw ADC value and voltage
+        print(f"Raw Value: {raw_value}, Voltage: {chan.voltage}V")
+
+        # Wait for a short period before reading again
+        time.sleep(0.5)
 
 except KeyboardInterrupt:
-    print("Arrêt du programme par l'utilisateur.")
-
+    # Handle keyboard interrupt (Ctrl+C)
+    pass
 finally:
-    GPIO.cleanup()
+    # Clean up resources
+    ads.deinit()
