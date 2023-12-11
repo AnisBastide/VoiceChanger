@@ -1,8 +1,19 @@
-import RPi.GPIO as GPIO # Import Raspberry Pi GPIO library
-GPIO.setwarnings(False) # Ignore warning for now
-GPIO.setmode(GPIO.BOARD) # Use physical pin numbering
-GPIO.setup(7, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
+import RPi.GPIO as GPIO
+from time import sleep
+#Set warnings off (optional)
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+#Set Button and LED pins
+Button = 7
+#Setup Button and LED
+GPIO.setup(Button,GPIO.IN,pull_up_down=GPIO.PUD_UP)
+#flag = 0
 
-while True: # Run forever
-    if GPIO.input(10) == GPIO.HIGH:
-        print("Button was pushed!")
+while True:
+    button_state = GPIO.input(Button)
+    print(button_state)
+    if button_state == 0:
+        print('push')
+    else:
+        print('no push')
+    sleep(1)
