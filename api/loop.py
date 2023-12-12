@@ -1,8 +1,7 @@
 import pyaudio
 import wave
 import threading
-import os
-import pygame
+import vlc
 import RPi.GPIO as GPIO
 
 GPIO.setwarnings(False)
@@ -20,14 +19,14 @@ RECORD_SECONDS = 5
 WAVE_OUTPUT_FILENAME = "enregistrement.wav"
 
 audio = pyaudio.PyAudio()
-pygame.mixer.init()
+player = vlc.MediaPlayer()
+
 recording = False
 loop_audio = False
 
 
 def record_audio():
     global recording
-    recording = True
     stream = audio.open(format=FORMAT, channels=CHANNELS,
                         rate=RATE, input=True,
                         frames_per_buffer=CHUNK)
@@ -50,13 +49,13 @@ def record_audio():
     waveFile.writeframes(b''.join(frames))
     waveFile.close()
 
-    pygame.mixer.music.load(WAVE_OUTPUT_FILENAME)
-    if loop_audio:
-        pygame.mixer.music.play(-1)
+    player.set_media(vlc.Media(WAVE_OUTPUT_FILENAME))
+    player.play()
 
 
 def play_audio():
     global loop_audio
+    global recording
     while True:
 
         button_state = GPIO.input(Button)
@@ -68,13 +67,14 @@ def play_audio():
             recording = False
         elif not recording:
             if not loop_audio:
-                if pygame.mixer.music.get_busy() == 0:
-                    pygame.mixer.music.load(WAVE_OUTPUT_FILENAME)
-                pygame.mixer.music.play(loops=-1)
+                if not player.get_state() == vlc.State.Playing:
+                    player.set_media(vlc.Media(WAVE_OUTPUT_FILENAME))
+                player.play()
                 loop_audio = True
             else:
-                pygame.mixer.music.stop()
+                player.stop()
                 loop_audio = False
 
 
 audio.terminate()
+play_audio()
