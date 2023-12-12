@@ -11,9 +11,8 @@ GPIO.setup(Button,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 
 while True:
     button_state = GPIO.input(Button)
-    print(button_state)
     if button_state == 0:
-        print('push')
+
     else:
-        print('no push')
+
     sleep(1)

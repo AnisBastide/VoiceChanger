@@ -2,8 +2,13 @@ import pyaudio
 import wave
 import threading
 import os
-from pynput import keyboard
 import pygame
+import RPi.GPIO as GPIO
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+Button = 21
+GPIO.setup(Button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # Paramètres d'enregistrement
 FORMAT = pyaudio.paInt16
@@ -12,12 +17,13 @@ RATE = 44100
 CHUNK = 1024
 RECORD_SECONDS = 5
 
-WAVE_OUTPUT_FILENAME = "recordedFile.wav"
+WAVE_OUTPUT_FILENAME = "enregistrement.wav"
 
 audio = pyaudio.PyAudio()
 pygame.mixer.init()
 recording = False
 loop_audio = False
+
 
 def record_audio():
     global recording
@@ -47,28 +53,28 @@ def record_audio():
     pygame.mixer.music.load(WAVE_OUTPUT_FILENAME)
     if loop_audio:
         pygame.mixer.music.play(-1)
+
+
 def play_audio():
     global loop_audio
-    if not loop_audio:
-        if pygame.mixer.music.get_busy() == 0:
-            pygame.mixer.music.load(WAVE_OUTPUT_FILENAME)
-        pygame.mixer.music.play(loops=-1)
-        loop_audio = True
-    else:
-        pygame.mixer.music.stop()
-        loop_audio = False
+    while True:
 
-def on_press(key):
-    global recording, loop_audio
-    if key == keyboard.Key.ctrl_l and not recording:
-        threading.Thread(target=record_audio).start()
-        recording = True
-    if key == keyboard.Key.alt_l and recording:
-        recording = False
-    if key == keyboard.Key.ctrl_r:
-        play_audio()
+        button_state = GPIO.input(Button)
+        if button_state == 0 and not recording:
+            loop_audio = False
+            threading.Thread(target=record_audio).start()
+            recording = True
+        elif button_state == 0 and recording:
+            recording = False
+        elif not recording:
+            if not loop_audio:
+                if pygame.mixer.music.get_busy() == 0:
+                    pygame.mixer.music.load(WAVE_OUTPUT_FILENAME)
+                pygame.mixer.music.play(loops=-1)
+                loop_audio = True
+            else:
+                pygame.mixer.music.stop()
+                loop_audio = False
 
-with keyboard.Listener(on_release=on_press) as listener:
-    listener.join()
 
 audio.terminate()
