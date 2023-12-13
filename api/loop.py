@@ -74,8 +74,8 @@ def play_audio():
                 loop_audio = True
             else:
                 print("2")
-                pygame.mixer.music.stop()
-                loop_audio = False
+                # pygame.mixer.music.stop()
+                # loop_audio = False
 
 
 audio.terminate()
