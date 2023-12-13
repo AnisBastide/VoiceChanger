@@ -1,48 +1,41 @@
-import numpy as np
 import pyaudio
+import numpy as np
+from scipy.signal import hilbert
 
-def robot_voice_effect(signal, sample_rate=44100):
-    modulator_frequency = 0.5
-    carrier_frequency = 200
+FORMAT = pyaudio.paInt16
+CHANNELS = 1
+RATE = 44100
+CHUNK = 1024
 
-    t = np.arange(len(signal)) / sample_rate
-    carrier = np.sin(2 * np.pi * carrier_frequency * t)
+audio = pyaudio.PyAudio()
+def process_audio(data):
+    audio_data = np.frombuffer(data, dtype=np.int16)
+    carrier = np.sin(2 * np.pi * 30 * np.arange(len(audio_data)) / RATE)
+    modulated = np.real(hilbert(audio_data) * carrier)
+    processed_data = modulated.astype(np.int16).tobytes()
+    return processed_data
 
-    modulated_signal = signal * carrier
 
-    return modulated_signal.astype(np.float32)  # Convertir en format float32
+stream_in = audio.open(format=FORMAT, channels=CHANNELS,
+                       rate=RATE, input=True,
+                       frames_per_buffer=CHUNK)
+stream_out = audio.open(format=FORMAT, channels=CHANNELS,
+                        rate=RATE, output=True,
+                        frames_per_buffer=CHUNK)
 
-def audio_callback(in_data, frame_count, time_info, status):
-    if status:
-        print(status)
+print("Enregistrement en cours...")
 
-    robot_voice = robot_voice_effect(np.frombuffer(in_data, dtype=np.float32))
-    robot_voice_stereo = np.column_stack([robot_voice] * 2)
-    return (robot_voice_stereo.tobytes(), pyaudio.paContinue)
-
-sample_rate = 44100
-block_size = 1024
-
-p = pyaudio.PyAudio()
-
-stream = p.open(format=pyaudio.paFloat32,
-                channels=2,
-                rate=sample_rate,
-                input=True,
-                output=True,
-                frames_per_buffer=block_size,
-                stream_callback=audio_callback)
-
-print("Presser Ctrl+C pour arrêter l'application.")
-
-stream.start_stream()
 
 try:
-    while stream.is_active():
-        pass
+    while True:
+        data = stream_in.read(CHUNK)
+        processed_data = process_audio(data)
+        stream_out.write(processed_data)
 except KeyboardInterrupt:
-    print("Arrêt de l'application.")
+    print("Arrêt de l'enregistrement...")
 
-stream.stop_stream()
-stream.close()
-p.terminate()
+stream_in.stop_stream()
+stream_in.close()
+stream_out.stop_stream()
+stream_out.close()
+audio.terminate()
