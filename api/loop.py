@@ -78,3 +78,4 @@ def play_audio():
 
 
 audio.terminate()
+play_audio()
