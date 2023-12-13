@@ -26,8 +26,6 @@ loop_audio = False
 
 
 def record_audio():
-    global recording
-    recording = True
     stream = audio.open(format=FORMAT, channels=CHANNELS,
                         rate=RATE, input=True,
                         frames_per_buffer=CHUNK)
@@ -57,6 +55,8 @@ def record_audio():
 
 def play_audio():
     global loop_audio
+    global recording
+    recording = False
     while True:
 
         button_state = GPIO.input(Button)
