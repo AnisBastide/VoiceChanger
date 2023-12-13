@@ -58,7 +58,6 @@ def play_audio():
     global recording
     recording = False
     while True:
-
         button_state = GPIO.input(Button)
         if button_state == 0 and not recording:
             loop_audio = False
@@ -68,11 +67,13 @@ def play_audio():
             recording = False
         elif not recording:
             if not loop_audio:
+                print("1")
                 if pygame.mixer.music.get_busy() == 0:
                     pygame.mixer.music.load(WAVE_OUTPUT_FILENAME)
                 pygame.mixer.music.play(loops=-1)
                 loop_audio = True
             else:
+                print("2")
                 pygame.mixer.music.stop()
                 loop_audio = False
 
