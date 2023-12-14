@@ -1,12 +1,21 @@
 import numpy as np
 import sounddevice as sd
 from fastapi import FastAPI
+import subprocess
+import sys
 
 app = FastAPI()
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+@app.post("/robot")
+async def start_robot(is_active: bool):
+    if is_active:
+        subprocess.run(["python", "robot.py"])
+    else:
+        sys.exit(0)
 
 def add_reverb(signal, decay=0.5, delay=3, sample_rate=44100):
     # Créer une enveloppe de réverbération exponentielle
