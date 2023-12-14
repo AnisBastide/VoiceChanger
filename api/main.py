@@ -2,8 +2,10 @@
 # import sounddevice as sd
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 import subprocess
 import sys
+
 
 app = FastAPI()
 
@@ -19,6 +21,8 @@ app.add_middleware(
 )
 
 
+class StateModel(BaseModel):
+    state: int
 def start_robot(is_active):
     global robot_process
     if is_active == 1:
@@ -29,12 +33,13 @@ def start_robot(is_active):
 
 
 @app.post("/robot")
-async def start_robot_route(is_active: int):
+async def start_robot_route(data: BaseModel):
+    print(data)
     global robot_process
-    if robot_process and is_active:
+    if robot_process and data:
         return {"message": "Le robot est déjà actif."}
 
-    start_robot(is_active)
+    start_robot(data)
     return {"message": "Opération en cours."}
 
 
