@@ -6,18 +6,33 @@ import sys
 
 app = FastAPI()
 
+robot_process = None
+
+print("TEST")
+
+
+def start_robot(is_active):
+    global robot_process
+    if is_active:
+        robot_process = subprocess.Popen(["python", "robot.py"])
+    else:
+        robot_process = None
+        sys.exit(0)
+
+
+@app.post("/robot")
+async def start_robot_route(is_active: bool):
+    global robot_process
+    if robot_process and is_active:
+        return {"message": "Le robot est déjà actif."}
+
+    start_robot(is_active)
+    return {"message": "Opération en cours."}
+
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-
-
-@app.post("/robot")
-async def start_robot(is_active: bool):
-    if is_active:
-        subprocess.run(["python", "robot.py"])
-    else:
-        sys.exit(0)
 
 
 # def add_reverb(signal, decay=0.5, delay=3, sample_rate=44100):
