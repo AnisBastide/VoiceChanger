@@ -23,21 +23,19 @@ app.add_middleware(
 
 class StateModel(BaseModel):
     state: int
-def start_robot(is_active):
-    print("dem");
-    robot_process = subprocess.Popen(["python", "robot.py"])
 
 
 @app.post("/robot")
 async def start_robot_route(data: BaseModel):
-    print(data)
-    global robot_process
-    if robot_process and data:
-        return {"message": "Le robot est déjà actif."}
+     subprocess.Popen(["python", "robot.py"])
 
-    start_robot(data)
-    return {"message": "Opération en cours."}
+@app.post("/demon")
+async def start_robot_route(data: BaseModel):
+     subprocess.Popen(["python", "demon.py"])
 
+@app.post("/reverb")
+async def start_robot_route(data: BaseModel):
+    subprocess.Popen(["python", "reverbpyaudio.py"])
 
 @app.get("/")
 def read_root():
