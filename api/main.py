@@ -1,5 +1,12 @@
 import numpy as np
 import sounddevice as sd
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
 
 def add_reverb(signal, decay=0.5, delay=3, sample_rate=44100):
     # Créer une enveloppe de réverbération exponentielle
