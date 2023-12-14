@@ -24,13 +24,8 @@ app.add_middleware(
 class StateModel(BaseModel):
     state: int
 def start_robot(is_active):
-    print(is_active)
-    global robot_process
-    if is_active == 1:
-        robot_process = subprocess.Popen(["python", "robot.py"])
-    elif is_active == 0:
-        robot_process = None
-        sys.exit(0)
+    print("dem");
+    robot_process = subprocess.Popen(["python", "robot.py"])
 
 
 @app.post("/robot")
