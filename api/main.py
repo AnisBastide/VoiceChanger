@@ -1,6 +1,7 @@
 # import numpy as np
 # import sounddevice as sd
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import subprocess
 import sys
 
@@ -8,8 +9,14 @@ app = FastAPI()
 
 robot_process = None
 
-print("TEST")
-
+# Configurer CORS pour permettre toutes les origines
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Ajuster ceci en fonction de vos besoins de sécurité
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def start_robot(is_active):
     global robot_process
