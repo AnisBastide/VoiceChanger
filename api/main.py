@@ -18,17 +18,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 def start_robot(is_active):
     global robot_process
-    if is_active:
+    if is_active == 1:
         robot_process = subprocess.Popen(["python", "robot.py"])
-    else:
+    elif is_active == 0:
         robot_process = None
         sys.exit(0)
 
 
 @app.post("/robot")
-async def start_robot_route(is_active: bool):
+async def start_robot_route(is_active: int):
     global robot_process
     if robot_process and is_active:
         return {"message": "Le robot est déjà actif."}
