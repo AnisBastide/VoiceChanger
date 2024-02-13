@@ -1,31 +1,28 @@
-# This Raspberry Pi code was developed by newbiely.com
-# This Raspberry Pi code is made available for public use without any restriction
-# For comprehensive instructions and wiring diagrams, please visit:
-# https://newbiely.com/tutorials/raspberry-pi/raspberry-pi-potentiometer
-
-
 import time
-import Adafruit_ADS1x15
+import board
+import busio
+from adafruit_ads1x15.analog_in import AnalogIn
+from adafruit_ads1x15.ads1115 import ADS1115
 
-# Create an ADS1115 ADC object
-adc = Adafruit_ADS1x15.ADS1115()
+# Création de l'objet I2C
+i2c = busio.I2C(board.SCL, board.SDA)
 
-# Set the gain to ±4.096V (adjust if needed)
-GAIN = 1
+# Création de l'objet ADC en utilisant l'interface I2C
+ads = ADS1115(i2c)
 
-# Main loop to read and display the analog value
+# Configuration du gain
+ads.gain = 1
+
+# Création d'un objet analogique pour lire depuis le canal A3
+chan = AnalogIn(ads, ADS1115.P3)
+
+# Boucle principale pour lire et afficher la valeur analogique
 try:
     while True:
-        # Read the raw analog value from channel A3
-        raw_value = adc.read_adc(3, gain=GAIN)
+        # Lire la valeur et la tension
+        print("Raw Value: {} \t Voltage: {:.2f} V".format(chan.value, chan.voltage))
 
-        # Convert the raw value to voltage
-        voltage = raw_value / 32767.0 * 4.096  # Assumes 4.096 V range for GAIN=1
-
-        # Print the results
-        print("Raw Value: {} \t Voltage: {:.2f} V".format(raw_value, voltage))
-
-        # Add a delay between readings (adjust as needed)
+        # Délai entre les lectures
         time.sleep(1)
 
 except KeyboardInterrupt:
