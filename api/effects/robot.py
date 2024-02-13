@@ -2,6 +2,10 @@ import pyaudio
 import numpy as np
 from scipy.signal import hilbert
 
+import signal
+import sys
+
+
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
@@ -25,17 +29,14 @@ stream_out = audio.open(format=FORMAT, channels=CHANNELS,
 
 print("Enregistrement en cours...")
 
-
-try:
-    while True:
-        data = stream_in.read(CHUNK)
-        processed_data = process_audio(data)
-        stream_out.write(processed_data)
-except KeyboardInterrupt:
+def signal_handler(sig, frame):
     print("Arrêt de l'enregistrement...")
+    stream_in.stop_stream()
+    stream_in.close()
+    stream_out.stop_stream()
+    stream_out.close()
+    audio.terminate()
+    sys.exit(0)
 
-stream_in.stop_stream()
-stream_in.close()
-stream_out.stop_stream()
-stream_out.close()
-audio.terminate()
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
