@@ -20,7 +20,7 @@ class StateModel(BaseModel):
 
 def start_effect(effect_name: str):
     stop_all_effects()  # Arrête tous les effets avant d'en démarrer un nouveau
-    processes[effect_name] = subprocess.Popen(["python", f"{effect_name}.py"])
+    processes[effect_name] = subprocess.Popen(["python", f"effects/{effect_name}.py"])
 
 def stop_all_effects():
     for effect_name, process in processes.items():
