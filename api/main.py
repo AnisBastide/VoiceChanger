@@ -1,3 +1,5 @@
+import sys
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -9,7 +11,7 @@ processes = {}
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Ajuster ceci en fonction de vos besoins de sécurité
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -19,8 +21,9 @@ class StateModel(BaseModel):
     state: int
 
 def start_effect(effect_name: str):
-    stop_all_effects()  # Arrête tous les effets avant d'en démarrer un nouveau
-    processes[effect_name] = subprocess.Popen(["python", f"effects/{effect_name}.py"])
+    python_executable = sys.executable
+    stop_all_effects()
+    processes[effect_name] = subprocess.Popen([python_executable, f"effects/{effect_name}.py"])
 
 def stop_all_effects():
     for effect_name, process in processes.items():

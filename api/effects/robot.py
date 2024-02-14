@@ -1,6 +1,6 @@
 import pyaudio
 import numpy as np
-from scipy.signal import hilbert
+
 
 import signal
 import sys
@@ -26,8 +26,7 @@ stream_out = audio.open(format=FORMAT, channels=CHANNELS,
                         rate=RATE, output=True,
                         frames_per_buffer=CHUNK)
 
-print("Enregistrement en cours...")
-
+v
 def signal_handler(sig, frame):
     print("Arrêt de l'enregistrement...")
     stream_in.stop_stream()

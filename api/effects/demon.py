@@ -32,7 +32,9 @@ stream = p.open(format=pyaudio.paFloat32,
                 frames_per_buffer=block_size,
                 stream_callback=audio_callback)
 
-print("Presser Ctrl+C pour arrêter l'application.")
+
+print("Demon Effect - Enregistrement en cours...")
+
 
 stream.start_stream()
 
