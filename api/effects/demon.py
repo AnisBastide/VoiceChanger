@@ -1,49 +1,21 @@
 import numpy as np
-import pyaudio
+from effects.template_voice import BaseVoiceEffect
 
-def robot_voice_effect(signal, sample_rate=44100):
-    modulator_frequency = 0.5
-    carrier_frequency = 200
+class DemonVoiceEffect(BaseVoiceEffect):
+    def process_audio(self, data):
+        audio_data = np.frombuffer(data, dtype=np.int16)
+        carrier_frequency = 30
+        t = np.arange(len(audio_data)) / self.rate
+        carrier = np.sin(2 * np.pi * carrier_frequency * t)
+        modulated = audio_data * carrier
+        processed_data = modulated.astype(np.int16).tobytes()
+        return processed_data
 
-    t = np.arange(len(signal)) / sample_rate
-    carrier = np.sin(2 * np.pi * carrier_frequency * t)
+    def start(self):
+        # Il est important de démarrer les streams d'entrée et de sortie
+        super().start()
+        print("Effet Démon démarré. Prêt à moduler le son.")
 
-    modulated_signal = signal * carrier
-    return modulated_signal.astype(np.float32)
-
-def audio_callback(in_data, frame_count, time_info, status):
-    if status:
-        print(status)
-
-    robot_voice = robot_voice_effect(np.frombuffer(in_data, dtype=np.float32))
-    robot_voice_stereo = np.column_stack([robot_voice] * 2)
-    return (robot_voice_stereo.tobytes(), pyaudio.paContinue)
-
-sample_rate = 44100
-block_size = 1024
-
-p = pyaudio.PyAudio()
-
-stream = p.open(format=pyaudio.paFloat32,
-                channels=2,
-                rate=sample_rate,
-                input=True,
-                output=True,
-                frames_per_buffer=block_size,
-                stream_callback=audio_callback)
-
-
-print("Demon Effect - Enregistrement en cours...")
-
-
-stream.start_stream()
-
-try:
-    while stream.is_active():
-        pass
-except KeyboardInterrupt:
-    print("Arrêt de l'application.")
-
-stream.stop_stream()
-stream.close()
-p.terminate()
+    def stop(self):
+        super().stop()
+        print("Effet Démon arrêté.")

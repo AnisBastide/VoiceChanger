@@ -1,40 +1,25 @@
-import pyaudio
 import numpy as np
+from effects.template_voice import BaseVoiceEffect
+class RobotVoiceEffect(BaseVoiceEffect):
+    def process_audio(self, data):
+        audio_data = np.frombuffer(data, dtype=np.int16)
+        carrier_frequency = 440  # Fréquence en Hz
+        modulator_frequency = 0.25  # Fréquence de modulation
+        mod_index = 1  # Indice de modulation
 
+        t = np.arange(len(audio_data)) / self.rate
+        carrier = np.sin(2 * np.pi * carrier_frequency * t)
+        modulator = np.sin(2 * np.pi * modulator_frequency * t) * mod_index
 
-import signal
-import sys
+        modulated = audio_data * (1 + modulator) * carrier
+        processed_data = modulated.astype(np.int16).tobytes()
+        return processed_data
 
-FORMAT = pyaudio.paInt16
-CHANNELS = 1
-RATE = 44100
-CHUNK = 1024
+    def start(self):
+        super().start()
+        print("Effet Robot démarré. Prêt à moduler le son.")
 
-audio = pyaudio.PyAudio()
-def process_audio(data):
-    audio_data = np.frombuffer(data, dtype=np.int16)
-    carrier = np.sin(2 * np.pi * 30 * np.arange(len(audio_data)) / RATE)
-    modulated = np.real(hilbert(audio_data) * carrier)
-    processed_data = modulated.astype(np.int16).tobytes()
-    return processed_data
-
-
-stream_in = audio.open(format=FORMAT, channels=CHANNELS,
-                       rate=RATE, input=True,
-                       frames_per_buffer=CHUNK)
-stream_out = audio.open(format=FORMAT, channels=CHANNELS,
-                        rate=RATE, output=True,
-                        frames_per_buffer=CHUNK)
-
-v
-def signal_handler(sig, frame):
-    print("Arrêt de l'enregistrement...")
-    stream_in.stop_stream()
-    stream_in.close()
-    stream_out.stop_stream()
-    stream_out.close()
-    audio.terminate()
-    sys.exit(0)
-
-signal.signal(signal.SIGINT, signal_handler)
-signal.signal(signal.SIGTERM, signal_handler)
+    def stop(self):
+        # Arrêt des streams et nettoyage
+        super().stop()
+        print("Effet Robot arrêté.")

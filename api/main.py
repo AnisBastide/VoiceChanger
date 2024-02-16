@@ -1,56 +1,39 @@
-import sys
+from fastapi import FastAPI
+import uvicorn
+from uvicorn.loops import asyncio
 
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-import subprocess
+from effects.demon import DemonVoiceEffect
+from effects.reverb import ReverbVoiceEffect
+from effects.robot import RobotVoiceEffect
 
 app = FastAPI()
+current_effect = None
 
-processes = {}
+@app.get("/start/{effect_name}")
+async def start_effect(effect_name: str):
+    global current_effect
+    if current_effect:
+        current_effect.stop()
+        current_effect = None
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+    if effect_name == "demon":
+        current_effect = DemonVoiceEffect()
+    elif effect_name == "robot":
+        current_effect = RobotVoiceEffect()
+    elif effect_name == "reverb":
+        current_effect = ReverbVoiceEffect()
 
-class StateModel(BaseModel):
-    state: int
+    else:
+        return {"error": "Effet inconnu"}
+    current_effect.start()
+    return {"status": f"Effet {effect_name} démarré"}
 
-def start_effect(effect_name: str):
-    python_executable = sys.executable
-    stop_all_effects()
-    processes[effect_name] = subprocess.Popen([python_executable, f"effects/{effect_name}.py"])
-
-def stop_all_effects():
-    for effect_name, process in processes.items():
-        process.terminate()
-        process.wait()
-    processes.clear()
-
-@app.post("/robot")
-async def start_robot(data: StateModel):
-    start_effect("robot")
-    return {"message": "Robot effect started"}
-
-@app.post("/demon")
-async def start_demon(data: StateModel):
-    start_effect("demon")
-    return {"message": "Demon effect started"}
-
-@app.post("/reverb")
-async def start_reverb(data: StateModel):
-    start_effect("reverbpyaudio")
-    return {"message": "Reverb effect started"}
-
-@app.post("/stop")
-async def stop_effects():
-    stop_all_effects()
-    return {"message": "All effects stopped"}
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+@app.get("/stop")
+async def stop_effect():
+    global current_effect
+    if current_effect:
+        current_effect.stop()
+        current_effect = None
+        return {"status": "Effet arrêté"}
+    else:
+        return {"error": "Aucun effet en cours de fonctionnement"}
