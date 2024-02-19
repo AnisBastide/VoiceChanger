@@ -1,44 +1,39 @@
-import numpy as np
-import sounddevice as sd
+from fastapi import FastAPI
+import uvicorn
+from uvicorn.loops import asyncio
 
-def add_reverb(signal, decay=0.5, delay=3, sample_rate=44100):
-    # Créer une enveloppe de réverbération exponentielle
-    envelope = decay ** np.arange(int(delay * sample_rate))
+from effects.demon import DemonVoiceEffect
+from effects.reverb import ReverbVoiceEffect
+from effects.robot import RobotVoiceEffect
 
-    # Normaliser l'enveloppe pour éviter une amplification excessive
-    envelope /= np.max(envelope)
+app = FastAPI()
+current_effect = None
 
-    # Appliquer la réverbération en convoluant le signal avec l'enveloppe
-    reverberated_signal = np.convolve(signal, envelope, mode='full')[:len(signal)]
+@app.get("/start/{effect_name}")
+async def start_effect(effect_name: str):
+    global current_effect
+    if current_effect:
+        current_effect.stop()
+        current_effect = None
 
-    return reverberated_signal
+    if effect_name == "demon":
+        current_effect = DemonVoiceEffect()
+    elif effect_name == "robot":
+        current_effect = RobotVoiceEffect()
+    elif effect_name == "reverb":
+        current_effect = ReverbVoiceEffect()
 
-def audio_callback(indata, outdata, frames, time, status):
-    if status:
-        print(status)
+    else:
+        return {"error": "Effet inconnu"}
+    current_effect.start()
+    return {"status": f"Effet {effect_name} démarré"}
 
-    # Ajouter de la réverbération au flux audio
-    reverberated_data = add_reverb(indata[:, 0])  # Utilisez le canal gauche pour la simplicité
-
-    # Répliquer le signal pour tous les canaux
-    reverberated_data = np.column_stack([reverberated_data] * indata.shape[1])
-
-    # Envoyer le signal modifié à la sortie audio
-    outdata[:] = reverberated_data
-
-# Paramètres audio
-sample_rate = 44100
-block_size = 1024
-
-# Initialiser l'objet sounddevice
-sd.default.samplerate = sample_rate
-sd.default.channels = 2  # Stéréo
-
-# Configurer la réverbération
-decay_factor = 0.5
-delay_time = 0.5
-
-# Ouvrir les flux d'entrée et de sortie
-with sd.Stream(callback=audio_callback, blocksize=block_size):
-    print("Presser Ctrl+C pour arrêter l'application.")
-    sd.sleep(1000000)
+@app.get("/stop")
+async def stop_effect():
+    global current_effect
+    if current_effect:
+        current_effect.stop()
+        current_effect = None
+        return {"status": "Effet arrêté"}
+    else:
+        return {"error": "Aucun effet en cours de fonctionnement"}

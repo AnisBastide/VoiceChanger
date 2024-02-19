@@ -44,7 +44,7 @@ stream = p.open(format=pyaudio.paInt16,
                 stream_callback=audio_callback,
                 frames_per_buffer=block_size)
 
-print("Appuyez sur Ctrl+C pour arrêter l'application.")
+print("Reverb Effect - Enregistrement en cours...")
 
 # Commencer la lecture en continu
 stream.start_stream()

@@ -17,7 +17,7 @@ RATE = 44100
 CHUNK = 1024
 RECORD_SECONDS = 5
 
-WAVE_OUTPUT_FILENAME = "enregistrement.wav"
+WAVE_OUTPUT_FILENAME = "../enregistrement.wav"
 
 audio = pyaudio.PyAudio()
 pygame.mixer.init()
