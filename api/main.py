@@ -3,7 +3,7 @@ import uvicorn
 from uvicorn.loops import asyncio
 
 from effects.demon import DemonVoiceEffect
-from effects.reverb import ReverbVoiceEffect
+from effects.echo import EchoVoiceEffect
 from effects.robot import RobotVoiceEffect
 
 app = FastAPI()
@@ -20,9 +20,10 @@ async def start_effect(effect_name: str):
         current_effect = DemonVoiceEffect()
     elif effect_name == "robot":
         current_effect = RobotVoiceEffect()
-    elif effect_name == "reverb":
-        current_effect = ReverbVoiceEffect()
-
+    elif effect_name == "echo":
+        current_effect = EchoVoiceEffect()
+    elif effect_name == "autotune":
+        current_effect = AutoTuneVoiceEffect()
     else:
         return {"error": "Effet inconnu"}
     current_effect.start()
