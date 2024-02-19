@@ -3,9 +3,9 @@ from effects.template_voice import BaseVoiceEffect
 class RobotVoiceEffect(BaseVoiceEffect):
     def process_audio(self, data):
         audio_data = np.frombuffer(data, dtype=np.int16)
-        carrier_frequency = 440  # Fréquence en Hz
-        modulator_frequency = 0.25  # Fréquence de modulation
-        mod_index = 1  # Indice de modulation
+        carrier_frequency = 440
+        modulator_frequency = 0.25
+        mod_index = 1
 
         t = np.arange(len(audio_data)) / self.rate
         carrier = np.sin(2 * np.pi * carrier_frequency * t)
