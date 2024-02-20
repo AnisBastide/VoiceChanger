@@ -1,2 +1,5 @@
 api/venv
 .idea
+__pycache__
+api/effects/__pycache__/
+api/__pycache__
