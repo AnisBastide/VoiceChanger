@@ -1,5 +1,7 @@
+import os
 from fastapi import FastAPI
 import uvicorn
+from starlette.middleware.cors import CORSMiddleware
 from uvicorn.loops import asyncio
 
 from effects.demon import DemonVoiceEffect
@@ -8,7 +10,17 @@ from effects.robot import RobotVoiceEffect
 from effects.loop import LoopVoiceEffect
 
 app = FastAPI()
+# Configurer CORS pour permettre toutes les origines
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Ajuster ceci en fonction de vos besoins de sécurité
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 current_effect = None
+
 
 @app.get("/start/{effect_name}")
 async def start_effect(effect_name: str):
@@ -30,6 +42,7 @@ async def start_effect(effect_name: str):
     current_effect.start()
     return {"status": f"Effet {effect_name} démarré"}
 
+
 @app.get("/stop")
 async def stop_effect():
     global current_effect
@@ -39,3 +52,14 @@ async def stop_effect():
         return {"status": "Effet arrêté"}
     else:
         return {"error": "Aucun effet en cours de fonctionnement"}
+
+
+@app.get("/effects")
+async def effects():
+    effects_list = []
+    files = os.listdir("effects")
+    for file in files:
+        file_name = file.removesuffix(".py")
+        if not file_name.startswith("__") and not file_name.startswith("template"):
+            effects_list.append(file_name)
+    return effects_list
