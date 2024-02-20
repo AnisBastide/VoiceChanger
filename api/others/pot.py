@@ -1,30 +1,17 @@
-# This Raspberry Pi code was developed by newbiely.com
-# This Raspberry Pi code is made available for public use without any restriction
-# For comprehensive instructions and wiring diagrams, please visit:
-# https://newbiely.com/tutorials/raspberry-pi/raspberry-pi-potentiometer
-import time
-import Adafruit_ADS1x15
+import board
+import busio
+import adafruit_ads1x15.ads1115 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
 
-# Create an ADS1115 ADC object
-adc = Adafruit_ADS1x15.ADS1115()
+# Initialize the I2C interface
+i2c = busio.I2C(board.SCL, board.SDA)
 
-# Set the gain to ±4.096V (adjust if needed)
-GAIN = 1
+# Create an ADS1115 object
+ads = ADS.ADS1115(i2c)
 
-# Main loop to read and display the analog value
-try:
-    while True:
-        # Read the raw analog value from channel A3
-        raw_value = adc.read_adc(3, gain=GAIN)
+# Define the analog input channel
+channel = AnalogIn(ads, ADS.P0)
 
-        # Convert the raw value to voltage
-        voltage = raw_value / 32767.0 * 4.096  # Assumes 4.096 V range for GAIN=1
-
-        # Print the results
-        print("Raw Value: {} \t Voltage: {:.2f} V".format(raw_value, voltage))
-
-        # Add a delay between readings (adjust as needed)
-        time.sleep(1)
-
-except KeyboardInterrupt:
-    print("\nExiting the program.")
+# Loop to read the analog input continuously
+while True:
+    print("Analog Value: ", channel.value, "Voltage: ", channel.voltage)
