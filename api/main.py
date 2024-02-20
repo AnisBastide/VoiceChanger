@@ -8,6 +8,7 @@ from effects.demon import DemonVoiceEffect
 from effects.echo import EchoVoiceEffect
 from effects.robot import RobotVoiceEffect
 from effects.loop import LoopVoiceEffect
+from effects.autotune import AutoTuneVoiceEffect
 
 app = FastAPI()
 # Configurer CORS pour permettre toutes les origines
@@ -37,6 +38,8 @@ async def start_effect(effect_name: str):
         current_effect = EchoVoiceEffect()
     elif effect_name == "loop":
         current_effect = LoopVoiceEffect()
+    elif effect_name == "autotune":
+        current_effect = AutoTuneVoiceEffect()
     else:
         return {"error": "Effet inconnu"}
     current_effect.start()
