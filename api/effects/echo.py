@@ -15,6 +15,7 @@ class EchoVoiceEffect(BaseVoiceEffect):
         self.echo_buffer_index = 0
 
     def process_audio(self, data):
+        print('test')
         audio_data = np.frombuffer(data, dtype=np.int16).astype(np.float32)
         # Créer un buffer pour les données traitées
         processed_data = np.zeros_like(audio_data)
