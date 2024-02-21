@@ -5,6 +5,8 @@ from starlette.middleware.cors import CORSMiddleware
 from uvicorn.loops import asyncio
 import sqlite3
 
+from others.pot import pot
+
 from effects.demon import DemonVoiceEffect
 from effects.echo import EchoVoiceEffect
 from effects.robot import RobotVoiceEffect
@@ -43,6 +45,8 @@ async def start_effect(effect_name: str):
         current_effect = LoopVoiceEffect()
     elif effect_name == "autotune":
         current_effect = AutoTuneVoiceEffect()
+    elif effect_name == "pot":
+        current_effect = pot()
     else:
         return {"error": "Effet inconnu"}
     current_effect.start()

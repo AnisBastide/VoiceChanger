@@ -63,10 +63,11 @@ class LoopVoiceEffect:
         self.thread = threading.Thread(target=self.process_audio)
         self.thread.start()
 
-        self.is_recording = True
+        #self.is_recording = True
+        # threading.Timer(5, self.toggle_recording).start()
         print("Effet Loop démarré. Appuyez sur CTRL pour commencer/arrêter l'enregistrement.")
 
-        threading.Timer(5, self.toggle_recording).start()
+
 
     def stop(self):
         self.running = False
