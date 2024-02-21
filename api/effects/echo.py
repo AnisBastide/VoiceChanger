@@ -1,5 +1,9 @@
 import numpy as np
 from effects.template_voice import BaseVoiceEffect
+import board
+import busio
+import adafruit_ads1x15.ads1115 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
 
 class EchoVoiceEffect(BaseVoiceEffect):
     def __init__(self, rate=44100, channels=1, chunk_size=1024, echo_delay=0.8, echo_decay=0.5):
@@ -13,13 +17,15 @@ class EchoVoiceEffect(BaseVoiceEffect):
         # Initialiser un buffer circulaire pour stocker les échantillons pour l'écho
         self.echo_buffer = np.zeros(int(self.rate * self.echo_delay), dtype=np.float32)
         self.echo_buffer_index = 0
+        i2c = busio.I2C(board.SCL, board.SDA)
+        ads = ADS.ADS1115(i2c)
+        self.channel = AnalogIn(ads, ADS.P0)
 
     def process_audio(self, data):
-        print('test')
         audio_data = np.frombuffer(data, dtype=np.int16).astype(np.float32)
         # Créer un buffer pour les données traitées
         processed_data = np.zeros_like(audio_data)
-
+        self.echo_buffer = np.zeros(int(self.rate * self.channel.voltage), dtype=np.float32)
         for i in range(len(audio_data)):
             # Lire l'échantillon actuel du buffer d'écho
             echo_sample = self.echo_buffer[self.echo_buffer_index]
