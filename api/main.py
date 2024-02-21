@@ -3,6 +3,7 @@ from fastapi import FastAPI
 import uvicorn
 from starlette.middleware.cors import CORSMiddleware
 from uvicorn.loops import asyncio
+import sqlite3
 
 from effects.demon import DemonVoiceEffect
 from effects.echo import EchoVoiceEffect
@@ -21,7 +22,9 @@ app.add_middleware(
 )
 
 current_effect = None
-
+connection = sqlite3.connect("database.db")
+cursor = connection.cursor()
+cursor.execute("CREATE TABLE IF NOT EXISTS example (id INTEGER, name TEXT, age INTEGER)")
 
 @app.get("/start/{effect_name}")
 async def start_effect(effect_name: str):
@@ -55,7 +58,6 @@ async def stop_effect():
         return {"status": "Effet arrêté"}
     else:
         return {"error": "Aucun effet en cours de fonctionnement"}
-
 
 @app.get("/effects")
 async def effects():

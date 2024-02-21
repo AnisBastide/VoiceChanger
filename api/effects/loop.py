@@ -1,7 +1,7 @@
 import numpy as np
 import pyaudio
 import threading
-import keyboard
+
 
 class LoopVoiceEffect:
     def __init__(self, rate=44100, channels=1, chunk_size=1024):
@@ -62,8 +62,11 @@ class LoopVoiceEffect:
                                           frames_per_buffer=self.chunk_size)
         self.thread = threading.Thread(target=self.process_audio)
         self.thread.start()
+
+        self.is_recording = True
         print("Effet Loop démarré. Appuyez sur CTRL pour commencer/arrêter l'enregistrement.")
-        keyboard.add_hotkey('ctrl', lambda: self.toggle_recording())
+
+        threading.Timer(5, self.toggle_recording).start()
 
     def stop(self):
         self.running = False
@@ -74,5 +77,5 @@ class LoopVoiceEffect:
         self.stream_out.stop_stream()
         self.stream_out.close()
         self.audio.terminate()
-        keyboard.remove_hotkey('ctrl')
+
         print("Effet Loop arrêté.")
