@@ -13,8 +13,8 @@ from effects.demon import DemonVoiceEffect
 from effects.echo import EchoVoiceEffect
 from effects.robot import RobotVoiceEffect
 from effects.loop import LoopVoiceEffect
-from effects.autotune import AutoTuneVoiceEffect
 
+from effects.wahwah import WahWahEffect
 app = FastAPI()
 # Configurer CORS pour permettre toutes les origines
 app.add_middleware(
@@ -45,14 +45,12 @@ async def start_effect(effect_name: str):
         current_effect = EchoVoiceEffect()
     elif effect_name == "loop":
         current_effect = LoopVoiceEffect()
-    elif effect_name == "autotune":
-        current_effect = AutoTuneVoiceEffect()
     elif effect_name == "overdrive":
         current_effect = OverdriveVoiceEffect()
     elif effect_name == "octaveur":
         current_effect = OctaveurVoiceEffect()
-    elif effect_name == "pot":
-        current_effect = pot()
+    elif effect_name == "wahwah":
+        current_effect = WahWahEffect()
     else:
         return {"error": "Effet inconnu"}
     current_effect.start()
