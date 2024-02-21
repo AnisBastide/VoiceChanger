@@ -7,6 +7,8 @@ import sqlite3
 
 from others.pot import pot
 
+from effects.overdrive import OverdriveVoiceEffect
+from effects.octaveur import OctaveurVoiceEffect
 from effects.demon import DemonVoiceEffect
 from effects.echo import EchoVoiceEffect
 from effects.robot import RobotVoiceEffect
@@ -45,6 +47,10 @@ async def start_effect(effect_name: str):
         current_effect = LoopVoiceEffect()
     elif effect_name == "autotune":
         current_effect = AutoTuneVoiceEffect()
+    elif effect_name == "overdrive":
+        current_effect = OverdriveVoiceEffect()
+    elif effect_name == "octaveur":
+        current_effect = OctaveurVoiceEffect()
     elif effect_name == "pot":
         current_effect = pot()
     else:
