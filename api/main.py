@@ -4,6 +4,9 @@ import uvicorn
 from starlette.middleware.cors import CORSMiddleware
 from uvicorn.loops import asyncio
 
+from effects.autotune import AutoTuneVoiceEffect
+from effects.overdrive import OverdriveVoiceEffect
+from effects.octaveur import OctaveurVoiceEffect
 from effects.demon import DemonVoiceEffect
 from effects.echo import EchoVoiceEffect
 from effects.robot import RobotVoiceEffect
@@ -37,6 +40,12 @@ async def start_effect(effect_name: str):
         current_effect = EchoVoiceEffect()
     elif effect_name == "loop":
         current_effect = LoopVoiceEffect()
+    elif effect_name == "autotune":
+        current_effect = AutoTuneVoiceEffect()
+    elif effect_name == "overdrive":
+        current_effect = OverdriveVoiceEffect()
+    elif effect_name == "octaveur":
+        current_effect = OctaveurVoiceEffect()
     else:
         return {"error": "Effet inconnu"}
     current_effect.start()
