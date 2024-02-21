@@ -5,7 +5,7 @@ class OverdriveVoiceEffect(BaseVoiceEffect):
     def process_audio(self, data):
         audio_data = np.frombuffer(data, dtype=np.int16)
         audio_data = audio_data / 32768.0
-        distorted_signal = self.overdrive(audio_data, 2, 0.5)
+        distorted_signal = self.overdrive(audio_data, 2, 1)
         processed_data = (distorted_signal * 32767.0).astype(np.int16).tobytes()
         return processed_data
 
