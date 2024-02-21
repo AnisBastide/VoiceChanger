@@ -5,6 +5,7 @@ import busio
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 
+
 class EchoVoiceEffect(BaseVoiceEffect):
     def __init__(self, rate=44100, channels=1, chunk_size=1024, echo_delay=0.8, echo_decay=0.5):
         super().__init__(rate, channels, chunk_size)
@@ -23,9 +24,12 @@ class EchoVoiceEffect(BaseVoiceEffect):
 
     def process_audio(self, data):
         audio_data = np.frombuffer(data, dtype=np.int16).astype(np.float32)
-        # Créer un buffer pour les données traitées
+
         processed_data = np.zeros_like(audio_data)
-        self.echo_buffer = np.zeros(int(self.rate * self.channel.voltage), dtype=np.float32)
+        if self.channel.voltage > 0.2:
+            self.echo_buffer = np.zeros(int(self.rate * self.channel.voltage), dtype=np.float32)
+            self.echo_buffer_index = 0
+
         for i in range(len(audio_data)):
             # Lire l'échantillon actuel du buffer d'écho
             echo_sample = self.echo_buffer[self.echo_buffer_index]
