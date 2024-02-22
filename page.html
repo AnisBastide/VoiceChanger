@@ -158,11 +158,10 @@
         <label for="effets">Choisis un effet</label>
         <select id="effets" name="effets"></select>
     </div>
-    <button class="loop-button">Loop</button>
+    <button class="loop-button" onclick="toggleRecord()">Loop</button>
     <div class="button-container">
         <button class="api-button" id="startEffect" onclick="startEffect()">START</button>
         <button class="api-button" id="stopEffect" onclick="stopEffect()">STOP</button>
-        <button class="api-button" id="startLoop" onclick="toggleRecord()">Toggle Record</button>
     </div>
     <div class="slider-container">
         <span class="slider-label">Potentiomètre :</span>
@@ -177,7 +176,26 @@
 </div>
 
 <script>
+    var slider = document.getElementById("potentiometerSlider");
 
+  // Add an event listener to the input event
+  slider.addEventListener("input", function() {
+    // Call your function and pass the current value
+    updatePotentiometer(slider.value);
+  });
+
+  // Your custom function that takes the current slider value as a parameter
+  async function updatePotentiometer(value) {
+      // Do something with the value
+      await fetch(`http://127.0.0.1:8000/echo/${value}`, {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+      }).then(response => response.json())
+          .then(data => console.log(data))
+          .catch((error) => console.error('Error:', error));
+  }
     async function loadEffects(){
         var effects = []
     await fetch('http://127.0.0.1:8000/effects',{
