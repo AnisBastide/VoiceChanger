@@ -21,14 +21,19 @@ class EchoVoiceEffect(BaseVoiceEffect):
         i2c = busio.I2C(board.SCL, board.SDA)
         ads = ADS.ADS1115(i2c)
         self.channel = AnalogIn(ads, ADS.P0)
+        self.previousVoltage = self.channel.voltage
+        self.isHardware = True
 
     def process_audio(self, data):
         audio_data = np.frombuffer(data, dtype=np.int16).astype(np.float32)
 
         processed_data = np.zeros_like(audio_data)
-        if self.channel.voltage > 0.2:
+        if self.previousVoltage == self.channel.voltage:
+            self.isHardware = False
+        if self.channel.voltage > 0.2 and self.isHardware:
             self.echo_buffer = np.zeros(int(self.rate * self.channel.voltage), dtype=np.float32)
             self.echo_buffer_index = 0
+            self.previousVoltage = self.channel.voltage
 
         for i in range(len(audio_data)):
             # Lire l'échantillon actuel du buffer d'écho
@@ -52,3 +57,8 @@ class EchoVoiceEffect(BaseVoiceEffect):
     def stop(self):
         super().stop()
         print("Effet d'écho arrêté.")
+
+    def updateValue(self,pot_value):
+        self.isHardware = False
+        self.echo_buffer = np.zeros(int(self.rate * pot_value), dtype=np.float32)
+        self.echo_buffer_index = 0

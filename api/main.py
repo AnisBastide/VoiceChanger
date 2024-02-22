@@ -11,6 +11,7 @@ from effects.echo import EchoVoiceEffect
 from effects.robot import RobotVoiceEffect
 from effects.loop import LoopVoiceEffect
 from effects.wahwah import WahWahEffect
+from effects.octaveur import OctaveurVoiceEffect
 from effects.distortion import DistortionEffect
 from effects.overdrive import OverdriveVoiceEffect
 
@@ -34,6 +35,13 @@ current_effect = None
 #cursor = connection.cursor()
 #cursor.execute("CREATE TABLE IF NOT EXISTS example (id INTEGER, name TEXT, age INTEGER)")
 
+@app.get("/echo/{echo_value}")
+async def echo(echo_value: float):
+    global current_effect
+    try:
+        current_effect.updateValue(echo_value)
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.get("/start/{effect_name}")
 async def start_effect(effect_name: str):
@@ -95,6 +103,7 @@ async def record():
     return 'success'
 
 
+
 def start_loop(channel):
     global current_effect
     current_effect = LoopVoiceEffect()
@@ -104,6 +113,16 @@ def start_loop(channel):
 
 GPIO.setup(20, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.add_event_detect(20, GPIO.RISING, callback=start_loop, bouncetime=300)
+
+def start_wahwah(channel):
+    global current_effect
+    current_effect = WahWahEffect()
+    current_effect.start()
+    print('Effet WahWah Démarré')
+
+
+GPIO.setup(19, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.add_event_detect(19, GPIO.RISING, callback=start_wahwah, bouncetime=300)
 
 
 def start_echo(channel):

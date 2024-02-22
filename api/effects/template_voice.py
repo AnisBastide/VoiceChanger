@@ -48,3 +48,6 @@ class BaseVoiceEffect:
         self.stream_out.close()
         self.audio.terminate()
         self.thread = None
+
+    def updateValue(self):
+        raise NotImplementedError('???')

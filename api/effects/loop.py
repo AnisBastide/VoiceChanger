@@ -2,6 +2,9 @@ import numpy as np
 import pyaudio
 import threading
 import RPi.GPIO as GPIO
+
+from api.effects.template_voice import BaseVoiceEffect
+
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 #Set Button and LED pins
@@ -10,8 +13,9 @@ Button = 21
 GPIO.setup(Button,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 
 
-class LoopVoiceEffect:
+class LoopVoiceEffect(BaseVoiceEffect):
     def __init__(self, rate=44100, channels=1, chunk_size=1024):
+        super().__init__(rate, channels, chunk_size)
         self.rate = rate
         self.channels = channels
         self.chunk_size = chunk_size
@@ -72,6 +76,7 @@ class LoopVoiceEffect:
 
         #self.is_recording = True
         # threading.Timer(5, self.toggle_recording).start()
+        GPIO.remove_event_detect(Button)
         GPIO.add_event_detect(Button, GPIO.RISING, callback=self.toggle_recording, bouncetime=300)
         print("Effet Loop démarré. Appuyez sur CTRL pour commencer/arrêter l'enregistrement.")
 
