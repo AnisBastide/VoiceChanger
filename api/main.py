@@ -52,7 +52,7 @@ async def start_effect(effect_name: str):
     elif effect_name == "octaveur":
         current_effect = OctaveurVoiceEffect()
     elif effect_name == "wahwah":
-        current_effect = WahWahEffect(10)
+        current_effect = WahWahEffect()
     elif effect_name == "distortion":
         current_effect = DistortionEffect()
     else:
