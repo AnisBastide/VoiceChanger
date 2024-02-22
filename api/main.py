@@ -15,6 +15,8 @@ from effects.robot import RobotVoiceEffect
 from effects.loop import LoopVoiceEffect
 
 from effects.wahwah import WahWahEffect
+from effects.distortion import DistortionEffect
+
 app = FastAPI()
 # Configurer CORS pour permettre toutes les origines
 app.add_middleware(
@@ -50,7 +52,9 @@ async def start_effect(effect_name: str):
     elif effect_name == "octaveur":
         current_effect = OctaveurVoiceEffect()
     elif effect_name == "wahwah":
-        current_effect = WahWahEffect()
+        current_effect = WahWahEffect(10)
+    elif effect_name == "distortion":
+        current_effect = DistortionEffect()
     else:
         return {"error": "Effet inconnu"}
     current_effect.start()
