@@ -71,6 +71,7 @@
         <select id="effets" name="effets">
         </select>
         <button class="api-button" id="stopEffect" onclick="stopEffect()">STOP</button>
+        <button class="api-button" id="startLoop" onclick="toggleRecord()">Toggle Record</button>
     </div>
     <div class="loop-container" id="loopContainer"></div>
 </div>
@@ -124,8 +125,22 @@
                 .catch((error) => console.error('Error:', error));
         }
 
+
         function stopEffect() {
             fetch('http://127.0.0.1:8000/stop', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch((error) => console.error('Error:', error));
+        }
+
+        function toggleRecord() {
+
+            fetch(`http://127.0.0.1:8000/record`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

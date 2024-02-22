@@ -1,4 +1,6 @@
 import os
+from datetime import time
+
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 import sqlite3
@@ -82,6 +84,15 @@ async def effects():
         if not file_name.startswith("__") and not file_name.startswith("template"):
             effects_list.append(file_name)
     return effects_list
+
+@app.get("/record")
+async def record():
+    global current_effect
+    if current_effect:
+        GPIO.output(21, GPIO.HIGH)
+        time.sleep(0.1)  # You may need to adjust this delay based on your requirements
+        GPIO.output(21, GPIO.LOW)
+    return 'success'
 
 
 def start_loop(channel):
