@@ -2,78 +2,178 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Raspbeat</title>
+   <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Tone Revolution</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
             background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+            background: #f0e9dc;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #5d4390;
+            text-align: center;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            color: #5d4390;
         }
 
         .button-container {
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
             margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .loop-button {
+            padding: 15px 30px;
+            margin: 0 10px 20px 10px;
+            cursor: pointer;
+            background-color: #5d4390;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .loop-button:hover {
+            background-color: #ea963a;
         }
 
         .api-button {
-            padding: 10px 20px;
-            margin: 0 5px;
+            padding: 15px 30px;
+            margin: 0 10px;
             cursor: pointer;
-            background-color: #ddd;
+            background-color: #ea963a;
+            color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: background 0.3s ease;
         }
 
-        .loop-container {
+        .api-button:hover {
+            background-color: #5d4390;
+        }
+
+        label {
+            color: #5d4390;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        select {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .slider-container {
             display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            width: 100%;
         }
 
-        .loop {
-            background: #e9e9e9;
-            padding: 10px;
-            margin: 10px;
-            width: calc(50% - 20px);
-            text-align: center;
+        .slider-label {
+            margin-bottom: 10px;
+            color: #5d4390;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 80%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ccc;
+            outline: none;
+            margin-top: 20px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #5d4390;
+            border-radius: 50%;
             cursor: pointer;
         }
 
-        .loop.playing {
-            background: #d1eaff;
+        input[type="range"]:focus {
+            outline: none;
+        }
+
+        .mixing-table-style {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 40px;
+            width: 100%;
+        }
+
+        .mixer {
+            width: 50px;
+            height: 50px;
+            background: #5d4390;
+            border-radius: 50%;
+            margin: 0 20px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div class="title">Tone Revolution</div>
     <div class="header">
-        <h1>Raspbeat</h1>
+        <label for="effets">Choisis un effet</label>
+        <select id="effets" name="effets"></select>
     </div>
+    <button class="loop-button">Loop</button>
     <div class="button-container">
         <button class="api-button" id="startEffect" onclick="startEffect()">START</button>
-        <label for="effets">Choisi un effet</label>
-        <select id="effets" name="effets">
-        </select>
         <button class="api-button" id="stopEffect" onclick="stopEffect()">STOP</button>
         <button class="api-button" id="startLoop" onclick="toggleRecord()">Toggle Record</button>
     </div>
-    <div class="loop-container" id="loopContainer"></div>
+    <div class="slider-container">
+        <span class="slider-label">Potentiomètre :</span>
+        <input type="range" id="potentiometerSlider" min="0" max="100" step="1" value="50">
+    </div>
+
+    <div class="mixing-table-style">
+        <div class="mixer"></div>
+        <div class="mixer"></div>
+        <div class="mixer"></div>
+    </div>
 </div>
 
 <script>
