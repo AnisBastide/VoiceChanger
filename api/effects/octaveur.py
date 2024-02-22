@@ -15,19 +15,23 @@ class OctaveurVoiceEffect(BaseVoiceEffect):
         self.factor = 0.5
 
     def process_audio(self, data):
-        # Convertir les données audio en tableau numpy
+        # Convertir les données audio en tableau
         audio_data = np.frombuffer(data, dtype=np.int16)
+
+        # Modification de la modification de l'effet en fonction du voltage du potentiomètre
         if self.channel.voltage > 0.2:
             self.factor = 0.5 + (self.channel.voltage - 0) * (1.5 - 0.5) / (3.3 - 0)
+
         # Appliquer l'effet d'octaveur
         audio_data_octave = self.octaveur(audio_data, self.factor)
 
-        # Convertir les données audio octavées en bytes
+        # Convertir les données audio modifiées en bytes
         processed_data = audio_data_octave.astype(np.int16).tobytes()
+
         return processed_data
 
     def octaveur(self, signal, facteur_octave):
-        # Appliquer une interpolation temporelle pour changer la vitesse de lecture
+        # Appliquer un changement la vitesse de lecture pour modifier le signal sonore
         signal_octave = np.interp(np.arange(0, len(signal), facteur_octave), np.arange(len(signal)), signal)
         return signal_octave
 
