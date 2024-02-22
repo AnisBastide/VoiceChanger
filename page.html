@@ -51,6 +51,22 @@
             width: 100%;
         }
 
+        .loop-button {
+            padding: 15px 30px;
+            margin: 0 10px 20px 10px;
+            cursor: pointer;
+            background-color: #5d4390;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .loop-button:hover {
+            background-color: #ea963a;
+        }
+
         .api-button {
             padding: 15px 30px;
             margin: 0 10px;
@@ -142,6 +158,7 @@
         <label for="effets">Choisis un effet</label>
         <select id="effets" name="effets"></select>
     </div>
+    <button class="loop-button">Loop</button>
     <div class="button-container">
         <button class="api-button" id="startEffect" onclick="startEffect()">START</button>
         <button class="api-button" id="stopEffect" onclick="stopEffect()">STOP</button>
