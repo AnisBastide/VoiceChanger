@@ -1,6 +1,13 @@
 import numpy as np
 import pyaudio
 import threading
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+#Set Button and LED pins
+Button = 21
+#Setup Button and LED
+GPIO.setup(Button,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 
 
 class LoopVoiceEffect:
@@ -44,7 +51,7 @@ class LoopVoiceEffect:
                 # Si aucun enregistrement ou boucle, jouer directement l'audio entrant
                 self.stream_out.write(data)
 
-    def toggle_recording(self):
+    def toggle_recording(self,channel):
         self.is_recording = not self.is_recording
         if not self.is_recording:
             print("Enregistrement terminé, prêt à jouer en boucle.")
@@ -65,6 +72,7 @@ class LoopVoiceEffect:
 
         #self.is_recording = True
         # threading.Timer(5, self.toggle_recording).start()
+        GPIO.add_event_detect(Button, GPIO.RISING, callback=self.toggle_recording, bouncetime=300)
         print("Effet Loop démarré. Appuyez sur CTRL pour commencer/arrêter l'enregistrement.")
 
 
@@ -78,5 +86,5 @@ class LoopVoiceEffect:
         self.stream_out.stop_stream()
         self.stream_out.close()
         self.audio.terminate()
-
+        GPIO.remove_event_detect(Button)
         print("Effet Loop arrêté.")

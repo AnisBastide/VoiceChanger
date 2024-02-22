@@ -1,21 +1,23 @@
 import os
+from datetime import time
+
 from fastapi import FastAPI
-import uvicorn
 from starlette.middleware.cors import CORSMiddleware
-from uvicorn.loops import asyncio
 import sqlite3
 
-from others.pot import pot
 
-from effects.overdrive import OverdriveVoiceEffect
-from effects.octaveur import OctaveurVoiceEffect
 from effects.demon import DemonVoiceEffect
 from effects.echo import EchoVoiceEffect
 from effects.robot import RobotVoiceEffect
 from effects.loop import LoopVoiceEffect
-
 from effects.wahwah import WahWahEffect
 from effects.distortion import DistortionEffect
+from effects.overdrive import OverdriveVoiceEffect
+
+import RPi.GPIO as GPIO
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
 
 app = FastAPI()
 # Configurer CORS pour permettre toutes les origines
@@ -28,9 +30,10 @@ app.add_middleware(
 )
 
 current_effect = None
-connection = sqlite3.connect("database.db")
-cursor = connection.cursor()
-cursor.execute("CREATE TABLE IF NOT EXISTS example (id INTEGER, name TEXT, age INTEGER)")
+#connection = sqlite3.connect("database.db")
+#cursor = connection.cursor()
+#cursor.execute("CREATE TABLE IF NOT EXISTS example (id INTEGER, name TEXT, age INTEGER)")
+
 
 @app.get("/start/{effect_name}")
 async def start_effect(effect_name: str):
@@ -71,6 +74,7 @@ async def stop_effect():
     else:
         return {"error": "Aucun effet en cours de fonctionnement"}
 
+
 @app.get("/effects")
 async def effects():
     effects_list = []
@@ -80,3 +84,58 @@ async def effects():
         if not file_name.startswith("__") and not file_name.startswith("template"):
             effects_list.append(file_name)
     return effects_list
+
+@app.get("/record")
+async def record():
+    global current_effect
+    if current_effect:
+        GPIO.output(21, GPIO.HIGH)
+        time.sleep(0.1)  # You may need to adjust this delay based on your requirements
+        GPIO.output(21, GPIO.LOW)
+    return 'success'
+
+
+def start_loop(channel):
+    global current_effect
+    current_effect = LoopVoiceEffect()
+    current_effect.start()
+    print('Effet Loop Démarré')
+
+
+GPIO.setup(20, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.add_event_detect(20, GPIO.RISING, callback=start_loop, bouncetime=300)
+
+
+def start_echo(channel):
+    global current_effect
+    current_effect = EchoVoiceEffect()
+    current_effect.start()
+    print('Effet Echo Démarré')
+
+
+GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.add_event_detect(16, GPIO.RISING, callback=start_echo, bouncetime=300)
+
+
+def start_overdrive(channel):
+    global current_effect
+    current_effect = OverdriveVoiceEffect()
+    current_effect.start()
+    print('Effet Overdrive Démarré')
+
+
+GPIO.setup(26, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.add_event_detect(26, GPIO.RISING, callback=start_overdrive, bouncetime=300)
+
+
+def stop_effect_button(channel):
+    global current_effect
+    if current_effect:
+        current_effect.stop()
+        current_effect = None
+        print('Effet arrêté')
+
+
+GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.add_event_detect(13, GPIO.RISING, callback=stop_effect_button, bouncetime=300)
+
