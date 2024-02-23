@@ -97,9 +97,11 @@ async def effects():
 async def record():
     global current_effect
     if current_effect:
+        GPIO.setup(21, GPIO.OUT)
         GPIO.output(21, GPIO.HIGH)
         time.sleep(0.1)  # You may need to adjust this delay based on your requirements
         GPIO.output(21, GPIO.LOW)
+        GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     return 'success'
 
 

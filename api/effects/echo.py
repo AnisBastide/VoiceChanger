@@ -28,8 +28,7 @@ class EchoVoiceEffect(BaseVoiceEffect):
         audio_data = np.frombuffer(data, dtype=np.int16).astype(np.float32)
 
         processed_data = np.zeros_like(audio_data)
-        if self.previousVoltage == self.channel.voltage:
-            self.isHardware = False
+        self.isHardware = False if round(self.previousVoltage,2) == round(self.channel.voltage,2) else True
         if self.channel.voltage > 0.2 and self.isHardware:
             self.echo_buffer = np.zeros(int(self.rate * self.channel.voltage), dtype=np.float32)
             self.echo_buffer_index = 0
@@ -59,6 +58,7 @@ class EchoVoiceEffect(BaseVoiceEffect):
         print("Effet d'écho arrêté.")
 
     def updateValue(self,pot_value):
-        self.isHardware = False
-        self.echo_buffer = np.zeros(int(self.rate * pot_value), dtype=np.float32)
-        self.echo_buffer_index = 0
+        if pot_value > 0.2:
+            self.isHardware = False
+            self.echo_buffer = np.zeros(int(self.rate * pot_value), dtype=np.float32)
+            self.echo_buffer_index = 0

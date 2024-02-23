@@ -1,10 +1,8 @@
 import numpy as np
 import pyaudio
 import threading
+from effects.template_voice import BaseVoiceEffect
 import RPi.GPIO as GPIO
-
-from api.effects.template_voice import BaseVoiceEffect
-
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 #Set Button and LED pins
